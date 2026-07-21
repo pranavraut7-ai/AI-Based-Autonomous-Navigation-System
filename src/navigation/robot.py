@@ -1,3 +1,4 @@
+import math
 import pygame
 
 from src.utils.constants import *
@@ -11,27 +12,28 @@ class Robot:
 
         self.path = []
 
-        self.radius = CELL_SIZE // 2 - 2
+        self.radius = CELL_SIZE // 2 - 4
 
-        self.color = (30, 30, 255)
+        self.color = ROBOT_COLOR
 
-        self.move_delay = 8
-        self.counter = 0
+        self.pixel_x = 0.0
+        self.pixel_y = 0.0
 
-        self.pixel_x = 0
-        self.pixel_y = 0
+        self.target_x = 0.0
+        self.target_y = 0.0
 
-        self.target_x = 0
-        self.target_y = 0
+        self.speed = 3.0
 
-        self.speed = 4
+        self.direction = 0
+
+        self.moving = False
 
     def set_position(self, node):
 
         self.node = node
 
-        self.pixel_x = node.col * CELL_SIZE + CELL_SIZE // 2
-        self.pixel_y = node.row * CELL_SIZE + CELL_SIZE // 2
+        self.pixel_x = node.col * CELL_SIZE + CELL_SIZE / 2
+        self.pixel_y = node.row * CELL_SIZE + CELL_SIZE / 2
 
         self.target_x = self.pixel_x
         self.target_y = self.pixel_y
@@ -40,82 +42,88 @@ class Robot:
 
         self.path = list(path)
 
-        if self.path:
-            # Reset robot to the first node of the new path
+        if len(self.path) > 0:
+
             first = self.path.pop(0)
 
             self.node = first
 
-            self.pixel_x = first.col * CELL_SIZE + CELL_SIZE // 2
-            self.pixel_y = first.row * CELL_SIZE + CELL_SIZE // 2
+            self.pixel_x = first.col * CELL_SIZE + CELL_SIZE / 2
+            self.pixel_y = first.row * CELL_SIZE + CELL_SIZE / 2
 
             self.target_x = self.pixel_x
             self.target_y = self.pixel_y
 
+            self.moving = True
+
     def update(self):
 
-        # Move to the next node only after reaching the current target
-        if (
-            abs(self.pixel_x - self.target_x) < 1
-            and
-            abs(self.pixel_y - self.target_y) < 1
-         ):
+        if not self.moving:
+            return
+
+        dx = self.target_x - self.pixel_x
+        dy = self.target_y - self.pixel_y
+
+        distance = math.hypot(dx, dy)
+
+        if distance <= self.speed:
 
             self.pixel_x = self.target_x
             self.pixel_y = self.target_y
 
             if self.path:
 
-                next_node = self.path.pop(0)
-
-                self.node = next_node
+                self.node = self.path.pop(0)
 
                 self.target_x = (
-                    next_node.col * CELL_SIZE
-                    + CELL_SIZE // 2
-                 )
+                    self.node.col * CELL_SIZE +
+                    CELL_SIZE / 2
+                )
 
                 self.target_y = (
-                    next_node.row * CELL_SIZE
-                    + CELL_SIZE // 2
-                 )
+                    self.node.row * CELL_SIZE +
+                    CELL_SIZE / 2
+                )
 
-         # Smooth X movement
-        if self.pixel_x < self.target_x:
-           self.pixel_x = min(self.pixel_x + self.speed, self.target_x)
+            else:
 
-        elif self.pixel_x > self.target_x:
-             self.pixel_x = max(self.pixel_x - self.speed, self.target_x)
+                self.moving = False
 
-         # Smooth Y movement
-        if self.pixel_y < self.target_y:
-           self.pixel_y = min(self.pixel_y + self.speed, self.target_y)
+            return
 
-        elif self.pixel_y > self.target_y:
-            self.pixel_y = max(self.pixel_y - self.speed, self.target_y)
+        angle = math.atan2(dy, dx)
 
-        # Snap exactly onto the target
-        if abs(self.pixel_x - self.target_x) < 1:
-            self.pixel_x = self.target_x
+        self.direction = math.degrees(angle)
 
-        if abs(self.pixel_y - self.target_y) < 1:
-            self.pixel_y = self.target_y    
+        self.pixel_x += math.cos(angle) * self.speed
+        self.pixel_y += math.sin(angle) * self.speed
 
     def draw(self, screen):
 
         if self.node is None:
             return
 
+        x = int(self.pixel_x)
+        y = int(self.pixel_y)
+
         pygame.draw.circle(
             screen,
             self.color,
-            (int(self.pixel_x), int(self.pixel_y)),
-            self.radius,
+            (x, y),
+            self.radius
         )
+
+        head_x = x + math.cos(
+            math.radians(self.direction)
+        ) * 8
+
+        head_y = y + math.sin(
+            math.radians(self.direction)
+        ) * 8
 
         pygame.draw.circle(
             screen,
             (255, 255, 255),
-            (int(self.pixel_x), int(self.pixel_y)),
-            5,
+            (int(head_x), int(head_y)),
+            3
         )

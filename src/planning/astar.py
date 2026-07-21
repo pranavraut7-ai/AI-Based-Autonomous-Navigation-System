@@ -28,78 +28,120 @@ def get_neighbors(node, grid):
 
             neighbor = grid[r][c]
 
-            if neighbor.color != OBSTACLE_COLOR:
+            if not neighbor.is_obstacle():
                 neighbors.append(neighbor)
 
     return neighbors
 
 
-def reconstruct_path(draw, came_from, current, start):
+def reconstruct_path(came_from, current):
 
-    path = [current]      # Goal node included first
+    path = [current]
 
     while current in came_from:
 
         current = came_from[current]
-
-        if current != start:
-            current.make_path()
-
         path.append(current)
 
-        draw()
-
     path.reverse()
+
     return path
-    
+
+
 def astar(draw, grid, start, goal):
 
     open_set = []
 
-    heapq.heappush(open_set, (0, id(start), start))
+    heapq.heappush(
+        open_set,
+        (
+            0,
+            0,
+            start
+        )
+    )
 
     came_from = {}
 
-    g_score = {start: 0}
+    g_score = {
+        start: 0
+    }
+
+    visited = set()
+
+    counter = 0
 
     while open_set:
 
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return False
+                return []
 
         current = heapq.heappop(open_set)[2]
 
+        if current in visited:
+            continue
+
+        visited.add(current)
+
         if current == goal:
 
-           path = reconstruct_path(
-              draw,
-              came_from,
-              goal,
-              start
+            path = reconstruct_path(
+                came_from,
+                goal
             )
 
-           return path
+            for node in path:
 
-        for neighbor in get_neighbors(current, grid):
+                if node != start and node != goal:
+                    node.make_path()
 
-            temp_g = g_score[current] + 1
+            draw()
 
-            if temp_g < g_score.get(neighbor, float("inf")):
-
-                came_from[neighbor] = current
-                g_score[neighbor] = temp_g
-
-                f = temp_g + heuristic(neighbor, goal)
-
-                heapq.heappush(open_set, (f, id(neighbor), neighbor))
-
-                if neighbor != goal:
-                    neighbor.make_open()
+            return path
 
         if current != start:
             current.make_closed()
+
+        for neighbor in get_neighbors(current, grid):
+
+            tentative = (
+                g_score[current]
+                + 1
+            )
+
+            if tentative < g_score.get(
+                neighbor,
+                float("inf")
+            ):
+
+                came_from[neighbor] = current
+
+                g_score[neighbor] = tentative
+
+                counter += 1
+
+                f = (
+                    tentative
+                    + heuristic(
+                        neighbor,
+                        goal
+                    )
+                )
+
+                heapq.heappush(
+                    open_set,
+                    (
+                        f,
+                        counter,
+                        neighbor
+                    )
+                )
+
+                if neighbor != goal:
+                    neighbor.make_open()
 
         draw()
 

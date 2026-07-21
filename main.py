@@ -1,111 +1,57 @@
 import pygame
 
-from src.navigation.robot import Robot
-from src.visualization.hud import HUD
+from src.simulation.simulation import Simulation
 from src.utils.constants import *
-from src.core.grid import Grid
-from src.planning.astar import astar
 
-pygame.init()
 
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("AI Autonomous Navigation System")
+def main():
 
-clock = pygame.time.Clock()
+    pygame.init()
 
-grid = Grid()
-hud = HUD()
-robot = Robot()
+    screen = pygame.display.set_mode(
+        (
+            WINDOW_WIDTH,
+            WINDOW_HEIGHT
+        )
+    )
 
-start = None
-goal = None
+    pygame.display.set_caption(
+        "AI Autonomous Navigation System"
+    )
 
-running = True
+    clock = pygame.time.Clock()
 
-while running:
+    simulation = Simulation(screen)
 
-    clock.tick(FPS)
+    running = True
 
-    for event in pygame.event.get():
+    while running:
 
-        if event.type == pygame.QUIT:
-            running = False
+        clock.tick(FPS)
 
-        if event.type == pygame.KEYDOWN:
+        for event in pygame.event.get():
 
-            if event.key == pygame.K_SPACE:
+            if event.type == pygame.QUIT:
 
-                if start and goal:
+                running = False
 
-                 for row in grid.grid:
-                   for node in row:
-                      if node not in (start, goal) and node.color not in (OBSTACLE_COLOR,):
-                          node.reset()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
 
-                 start.make_start()
-                 goal.make_goal()
+                simulation.handle_mouse(event)
 
-                path = astar(
-                  lambda: (
-                          robot.update(),
+            elif event.type == pygame.KEYDOWN:
 
-                          grid.draw(screen),
+                if event.key == pygame.K_SPACE:
 
-                          robot.draw(screen),
+                    simulation.find_path()
 
-                          hud.draw(screen),
+        simulation.update()
 
-                          pygame.display.update()
-                      ),
-                          grid.grid,
-                          start,
-                          goal
-                     )
+        simulation.render()
 
-                robot.set_path(path)
+    pygame.quit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
 
-            x, y = pygame.mouse.get_pos()
+if __name__ == "__main__":
 
-            row = y // CELL_SIZE
-            col = x // CELL_SIZE
-
-            if row < ROWS and col < COLS:
-
-                node = grid.grid[row][col]
-
-                # Left Click
-                if event.button == 1:
-
-                    if start is None:
-
-                        start = node
-                        start.make_start()
-                        robot.set_position(start)
-
-                    elif goal is None and node != start:
-
-                        goal = node
-                        goal.make_goal()
-
-                    elif node != start and node != goal:
-
-                        node.make_obstacle()
-
-                # Right Click
-                elif event.button == 3:
-
-                    node.reset()
-
-                    if node == start:
-                        start = None
-
-                    if node == goal:
-                        goal = None
-
-    grid.draw(screen)
-
-    pygame.display.update()
-
-pygame.quit()
+    main()

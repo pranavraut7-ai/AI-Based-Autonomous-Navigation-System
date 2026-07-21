@@ -1,38 +1,50 @@
-"""
-Project Constants
-AI-Based Autonomous Navigation System
-"""
+import pygame
 
-# Window Settings
+# -----------------------------
+# Window
+# -----------------------------
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
 FPS = 60
 
-# Grid Settings
+# -----------------------------
+# Grid
+# -----------------------------
 ROWS = 20
 COLS = 20
+
 CELL_SIZE = WINDOW_WIDTH // COLS
 
-# Colors (RGB)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+# -----------------------------
+# Colors
+# -----------------------------
+BACKGROUND_COLOR = (25, 25, 25)
 
-RED = (255, 0, 0)
-GREEN = (0, 200, 0)
-BLUE = (0, 120, 255)
+GRID_COLOR = (60, 60, 60)
 
-YELLOW = (255, 255, 0)
+EMPTY_COLOR = (35, 35, 35)
 
-GRAY = (200, 200, 200)
-DARK_GRAY = (100, 100, 100)
+START_COLOR = (46, 204, 113)
 
-ORANGE = (255, 165, 0)
+GOAL_COLOR = (231, 76, 60)
 
-START_COLOR = GREEN
-GOAL_COLOR = RED
-OBSTACLE_COLOR = BLACK
-PATH_COLOR = BLUE
-GRID_COLOR = GRAY
-BACKGROUND_COLOR = WHITE
-OPEN_COLOR = (64, 224, 208)
-CLOSED_COLOR = (255, 215, 0)
+OBSTACLE_COLOR = (15, 15, 15)
+
+OPEN_COLOR = (52, 152, 219)
+
+CLOSED_COLOR = (241, 196, 15)
+
+PATH_COLOR = (155, 89, 182)
+
+ROBOT_COLOR = (52, 152, 219)
+
+TEXT_COLOR = (240, 240, 240)
+
+# -----------------------------
+# Fonts
+# -----------------------------
+pygame.font.init()
+
+HUD_FONT = pygame.font.SysFont("Segoe UI", 18)
+
+TITLE_FONT = pygame.font.SysFont("Segoe UI", 24, bold=True)

@@ -1,26 +1,15 @@
-# Python cache
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 
-# Virtual environments
+# Virtual Environment
 .venv/
 venv/
-env/
 
 # VS Code
 .vscode/
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Build folders
-build/
-dist/
-
-# Logs
-*.log
-
-# OS files
+# OS
 .DS_Store
 Thumbs.db

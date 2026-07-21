@@ -7,34 +7,32 @@ class HUD:
 
     def __init__(self):
 
-        pygame.font.init()
+        self.algorithm = "A*"
 
-        self.font = pygame.font.SysFont("consolas", 20)
+        self.status = "Ready"
 
-    def draw(
-        self,
-        screen,
-        algorithm="A*",
-        explored=0,
-        path_length=0,
-        execution_time=0,
-    ):
+    def draw(self, screen):
 
-        texts = [
+        panel = pygame.Rect(
+            0,
+            WINDOW_HEIGHT - 40,
+            WINDOW_WIDTH,
+            40
+        )
 
-            f"Algorithm : {algorithm}",
-            f"Explored : {explored}",
-            f"Path Length : {path_length}",
-            f"Execution : {execution_time:.2f} ms",
+        pygame.draw.rect(
+            screen,
+            (18, 18, 18),
+            panel
+        )
 
-        ]
+        text = HUD_FONT.render(
+            f"Algorithm : {self.algorithm}      Status : {self.status}",
+            True,
+            TEXT_COLOR
+        )
 
-        y = 10
-
-        for text in texts:
-
-            surface = self.font.render(text, True, (20, 20, 20))
-
-            screen.blit(surface, (10, y))
-
-            y += 25
+        screen.blit(
+            text,
+            (10, WINDOW_HEIGHT - 28)
+        )
