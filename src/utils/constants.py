@@ -1,0 +1,38 @@
+"""
+Project Constants
+AI-Based Autonomous Navigation System
+"""
+
+# Window Settings
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 800
+FPS = 60
+
+# Grid Settings
+ROWS = 20
+COLS = 20
+CELL_SIZE = WINDOW_WIDTH // COLS
+
+# Colors (RGB)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+RED = (255, 0, 0)
+GREEN = (0, 200, 0)
+BLUE = (0, 120, 255)
+
+YELLOW = (255, 255, 0)
+
+GRAY = (200, 200, 200)
+DARK_GRAY = (100, 100, 100)
+
+ORANGE = (255, 165, 0)
+
+START_COLOR = GREEN
+GOAL_COLOR = RED
+OBSTACLE_COLOR = BLACK
+PATH_COLOR = BLUE
+GRID_COLOR = GRAY
+BACKGROUND_COLOR = WHITE
+OPEN_COLOR = (64, 224, 208)
+CLOSED_COLOR = (255, 215, 0)
