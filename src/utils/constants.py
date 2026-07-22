@@ -1,50 +1,66 @@
 import pygame
 
-# -----------------------------
+# =====================================================
 # Window
-# -----------------------------
+# =====================================================
+
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
+
 FPS = 60
 
-# -----------------------------
+# =====================================================
 # Grid
-# -----------------------------
+# =====================================================
+
 ROWS = 20
 COLS = 20
 
 CELL_SIZE = WINDOW_WIDTH // COLS
 
-# -----------------------------
-# Colors
-# -----------------------------
-BACKGROUND_COLOR = (25, 25, 25)
+# =====================================================
+# Professional Light Theme
+# =====================================================
 
-GRID_COLOR = (60, 60, 60)
+BACKGROUND_COLOR = (245, 247, 250)
 
-EMPTY_COLOR = (35, 35, 35)
+GRID_COLOR = (220, 224, 229)
+
+EMPTY_COLOR = (255, 255, 255)
 
 START_COLOR = (46, 204, 113)
 
 GOAL_COLOR = (231, 76, 60)
 
-OBSTACLE_COLOR = (15, 15, 15)
+OBSTACLE_COLOR = (55, 55, 55)
 
-OPEN_COLOR = (52, 152, 219)
+OPEN_COLOR = (102, 204, 255)
 
-CLOSED_COLOR = (241, 196, 15)
+CLOSED_COLOR = (223, 230, 238)
 
-PATH_COLOR = (155, 89, 182)
+PATH_COLOR = (255, 193, 7)
 
 ROBOT_COLOR = (52, 152, 219)
 
-TEXT_COLOR = (240, 240, 240)
+TEXT_COLOR = (35, 35, 35)
 
-# -----------------------------
+PANEL_COLOR = (255, 255, 255)
+
+PANEL_BORDER = (205, 210, 218)
+
+# =====================================================
 # Fonts
-# -----------------------------
+# =====================================================
+
 pygame.font.init()
 
-HUD_FONT = pygame.font.SysFont("Segoe UI", 18)
+TITLE_FONT = pygame.font.SysFont(
+    "Segoe UI",
+    24,
+    bold=True
+)
 
-TITLE_FONT = pygame.font.SysFont("Segoe UI", 24, bold=True)
+HUD_FONT = pygame.font.SysFont(
+    "Segoe UI",
+    18
+)

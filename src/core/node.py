@@ -15,22 +15,35 @@ class Node:
 
         self.color = EMPTY_COLOR
 
+    # ----------------------------------------------------
+
     def get_position(self):
         return self.row, self.col
+
+    # ----------------------------------------------------
 
     def reset(self):
         self.color = EMPTY_COLOR
 
+    # ----------------------------------------------------
+
     def make_start(self):
         self.color = START_COLOR
+
+    # ----------------------------------------------------
 
     def make_goal(self):
         self.color = GOAL_COLOR
 
+    # ----------------------------------------------------
+
     def make_obstacle(self):
         self.color = OBSTACLE_COLOR
 
+    # ----------------------------------------------------
+
     def make_open(self):
+
         if self.color not in (
             START_COLOR,
             GOAL_COLOR,
@@ -38,7 +51,10 @@ class Node:
         ):
             self.color = OPEN_COLOR
 
+    # ----------------------------------------------------
+
     def make_closed(self):
+
         if self.color not in (
             START_COLOR,
             GOAL_COLOR,
@@ -46,28 +62,42 @@ class Node:
         ):
             self.color = CLOSED_COLOR
 
+    # ----------------------------------------------------
+
     def make_path(self):
+
         if self.color not in (
             START_COLOR,
             GOAL_COLOR,
         ):
             self.color = PATH_COLOR
 
+    # ----------------------------------------------------
+
     def is_obstacle(self):
         return self.color == OBSTACLE_COLOR
 
+    # ----------------------------------------------------
+
     def draw(self, screen):
+
+        margin = 2
+
+        rect = pygame.Rect(
+            self.x + margin,
+            self.y + margin,
+            CELL_SIZE - (margin * 2),
+            CELL_SIZE - (margin * 2),
+        )
 
         pygame.draw.rect(
             screen,
             self.color,
-            (
-                self.x,
-                self.y,
-                CELL_SIZE,
-                CELL_SIZE,
-            ),
+            rect,
+            border_radius=6,
         )
+
+    # ----------------------------------------------------
 
     def __lt__(self, other):
         return False
@@ -76,6 +106,7 @@ class Node:
         return hash((self.row, self.col))
 
     def __eq__(self, other):
+
         return (
             isinstance(other, Node)
             and self.row == other.row

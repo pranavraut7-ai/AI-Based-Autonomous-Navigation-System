@@ -14,14 +14,22 @@ class Robot:
         self.path = []
         self.index = 0
 
-        self.speed = 4
+        self.max_speed = 4.0
+        self.speed = 0.0
+        self.acceleration = 0.18
 
         self.active = False
 
-        # Robot heading (degrees)
         self.angle = 0
+        self.target_angle = 0
+        self.turn_speed = 6
 
-    # ---------------------------------
+        # Goal animation
+        self.goal_animation = False
+        self.goal_timer = 0
+        self.goal_duration = 40
+
+    # --------------------------------------------------
 
     def set_position(self, node):
 
@@ -30,10 +38,18 @@ class Robot:
 
         self.path = []
         self.index = 0
-        self.active = False
-        self.angle = 0
 
-    # ---------------------------------
+        self.speed = 0
+
+        self.angle = 0
+        self.target_angle = 0
+
+        self.active = False
+
+        self.goal_animation = False
+        self.goal_timer = 0
+
+    # --------------------------------------------------
 
     def set_path(self, path):
 
@@ -42,11 +58,28 @@ class Robot:
 
         self.path = path
         self.index = 0
+
+        self.speed = 0
+
+        self.goal_animation = False
+        self.goal_timer = 0
+
         self.active = True
 
-    # ---------------------------------
+    # --------------------------------------------------
 
     def update(self):
+
+        # Goal pulse animation
+        if self.goal_animation:
+
+            self.goal_timer += 1
+
+            if self.goal_timer >= self.goal_duration:
+
+                self.goal_animation = False
+
+            return
 
         if not self.active:
             return
@@ -54,6 +87,11 @@ class Robot:
         if self.index >= len(self.path):
 
             self.active = False
+            self.speed = 0
+
+            self.goal_animation = True
+            self.goal_timer = 0
+
             return
 
         target = self.path[self.index]
@@ -65,6 +103,35 @@ class Robot:
         dy = target_y - self.y
 
         distance = math.hypot(dx, dy)
+
+        if distance > 0:
+
+            self.target_angle = math.degrees(
+                math.atan2(dy, dx)
+            )
+
+        angle_diff = (
+            self.target_angle - self.angle + 180
+        ) % 360 - 180
+
+        if abs(angle_diff) > self.turn_speed:
+
+            self.angle += (
+                self.turn_speed
+                if angle_diff > 0
+                else -self.turn_speed
+            )
+
+        else:
+
+            self.angle = self.target_angle
+
+        if self.speed < self.max_speed:
+
+            self.speed += self.acceleration
+
+            if self.speed > self.max_speed:
+                self.speed = self.max_speed
 
         if distance < self.speed:
 
@@ -78,58 +145,88 @@ class Robot:
             self.x += (dx / distance) * self.speed
             self.y += (dy / distance) * self.speed
 
-            self.angle = math.degrees(
-                math.atan2(dy, dx)
-            )
-
-    # ---------------------------------
+    # --------------------------------------------------
 
     def draw(self, screen):
 
         if self.x == 0 and self.y == 0:
             return
 
-        body_radius = CELL_SIZE // 3
+        radius = CELL_SIZE // 3
 
-        # Main robot body
+        body_color = (45, 170, 255)
+
+        # Green pulse after reaching goal
+        if self.goal_animation:
+
+            pulse = radius + int(
+                8 * abs(math.sin(self.goal_timer * 0.25))
+            )
+
+            pygame.draw.circle(
+                screen,
+                (80, 255, 120),
+                (int(self.x), int(self.y)),
+                pulse,
+                3
+            )
+
+            body_color = (80, 255, 120)
+
         pygame.draw.circle(
             screen,
-            (40, 170, 255),
+            body_color,
             (int(self.x), int(self.y)),
-            body_radius
+            radius
         )
 
-        # Body outline
         pygame.draw.circle(
             screen,
-            (230, 230, 230),
+            (240, 240, 240),
             (int(self.x), int(self.y)),
-            body_radius,
+            radius,
             2
         )
 
-        # Front heading indicator
-        front_length = body_radius + 4
+        rad = math.radians(self.angle)
 
-        hx = self.x + front_length * math.cos(
-            math.radians(self.angle)
-        )
-
-        hy = self.y + front_length * math.sin(
-            math.radians(self.angle)
-        )
+        nose_x = self.x + math.cos(rad) * (radius + 6)
+        nose_y = self.y + math.sin(rad) * (radius + 6)
 
         pygame.draw.line(
             screen,
             (255, 255, 255),
-            (int(self.x), int(self.y)),
-            (int(hx), int(hy)),
+            (self.x, self.y),
+            (nose_x, nose_y),
             3
         )
 
         pygame.draw.circle(
             screen,
-            (255, 80, 80),
-            (int(hx), int(hy)),
+            (255, 90, 90),
+            (int(nose_x), int(nose_y)),
             4
+        )
+
+        left = math.radians(self.angle + 140)
+        right = math.radians(self.angle - 140)
+
+        lx = self.x + math.cos(left) * radius
+        ly = self.y + math.sin(left) * radius
+
+        rx = self.x + math.cos(right) * radius
+        ry = self.y + math.sin(right) * radius
+
+        pygame.draw.circle(
+            screen,
+            (70, 70, 70),
+            (int(lx), int(ly)),
+            3
+        )
+
+        pygame.draw.circle(
+            screen,
+            (70, 70, 70),
+            (int(rx), int(ry)),
+            3
         )
