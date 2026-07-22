@@ -32,7 +32,6 @@ def main():
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
-
                 running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -41,9 +40,25 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_SPACE:
+                # Exit
+                if event.key == pygame.K_ESCAPE:
+                    running = False
 
+                # Run planner
+                elif event.key == pygame.K_SPACE:
                     simulation.find_path()
+
+                # Full reset
+                elif event.key == pygame.K_r:
+                    simulation.reset_simulation()
+
+                # Clear only obstacles
+                elif event.key == pygame.K_c:
+                    simulation.clear_obstacles()
+
+                # New empty map
+                elif event.key == pygame.K_n:
+                    simulation.new_map()
 
         simulation.update()
 

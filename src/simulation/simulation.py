@@ -21,7 +21,6 @@ class Simulation:
         self.hud = HUD()
 
         self.start = None
-
         self.goal = None
 
     def handle_mouse(self, event):
@@ -41,7 +40,6 @@ class Simulation:
             if self.start is None:
 
                 self.start = node
-
                 self.start.make_start()
 
                 self.robot.set_position(node)
@@ -49,7 +47,6 @@ class Simulation:
             elif self.goal is None and node != self.start:
 
                 self.goal = node
-
                 self.goal.make_goal()
 
             elif node != self.start and node != self.goal:
@@ -68,7 +65,7 @@ class Simulation:
 
     def find_path(self):
 
-        if not self.start or not self.goal:
+        if self.start is None or self.goal is None:
             return
 
         self.grid.clear_search(
@@ -89,6 +86,38 @@ class Simulation:
         )
 
         self.robot.set_path(path)
+
+    # -------------------------
+    # NEW CONTROLS
+    # -------------------------
+
+    def clear_obstacles(self):
+
+        for row in self.grid.grid:
+
+            for node in row:
+
+                if (
+                    node != self.start and
+                    node != self.goal and
+                    node.is_obstacle()
+                ):
+                    node.reset()
+
+    def new_map(self):
+
+        self.grid.reset_all()
+
+        self.start = None
+        self.goal = None
+
+        self.robot = Robot()
+
+    def reset_simulation(self):
+
+        self.new_map()
+
+    # -------------------------
 
     def update(self):
 
