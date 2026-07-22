@@ -44,10 +44,14 @@ class Simulation:
 
                 self.robot.set_position(node)
 
+                self.hud.set_status("START SET")
+
             elif self.goal is None and node != self.start:
 
                 self.goal = node
                 self.goal.make_goal()
+
+                self.hud.set_status("GOAL SET")
 
             elif node != self.start and node != self.goal:
 
@@ -68,6 +72,8 @@ class Simulation:
         if self.start is None or self.goal is None:
             return
 
+        self.hud.set_status("PLANNING")
+
         self.grid.clear_search(
             self.start,
             self.goal
@@ -87,9 +93,11 @@ class Simulation:
 
         self.robot.set_path(path)
 
-    # -------------------------
-    # NEW CONTROLS
-    # -------------------------
+        self.hud.set_status("MOVING")
+
+        self.hud.set_robot_state("ACTIVE")
+
+        self.hud.set_path_length(len(path))
 
     def clear_obstacles(self):
 
@@ -104,6 +112,8 @@ class Simulation:
                 ):
                     node.reset()
 
+        self.hud.set_status("READY")
+
     def new_map(self):
 
         self.grid.reset_all()
@@ -113,15 +123,21 @@ class Simulation:
 
         self.robot = Robot()
 
+        self.hud = HUD()
+
     def reset_simulation(self):
 
         self.new_map()
 
-    # -------------------------
-
     def update(self):
 
         self.robot.update()
+
+        if not self.robot.active and self.hud.robot_state == "ACTIVE":
+
+            self.hud.set_status("GOAL REACHED")
+
+            self.hud.set_robot_state("IDLE")
 
     def render(self):
 
