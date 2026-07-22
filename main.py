@@ -23,8 +23,9 @@ def main():
 
     simulation = Simulation(screen)
 
-    # Keep HUD synchronized with the default algorithm
-    simulation.hud.set_algorithm(simulation.current_algorithm)
+    simulation.hud.set_algorithm(
+        simulation.current_algorithm
+    )
 
     running = True
 
@@ -52,22 +53,47 @@ def main():
                 elif event.key == pygame.K_1:
 
                     simulation.current_algorithm = "A*"
+
                     simulation.hud.set_algorithm("A*")
-                    simulation.hud.set_status("A* SELECTED")
+
+                    simulation.hud.set_status(
+                        "A* SELECTED"
+                    )
 
                 elif event.key == pygame.K_2:
 
                     simulation.current_algorithm = "DIJKSTRA"
-                    simulation.hud.set_algorithm("DIJKSTRA")
-                    simulation.hud.set_status("DIJKSTRA SELECTED")
+
+                    simulation.hud.set_algorithm(
+                        "DIJKSTRA"
+                    )
+
+                    simulation.hud.set_status(
+                        "DIJKSTRA SELECTED"
+                    )
+
+                elif event.key == pygame.K_3:
+
+                    simulation.current_algorithm = "BFS"
+
+                    simulation.hud.set_algorithm(
+                        "BFS"
+                    )
+
+                    simulation.hud.set_status(
+                        "BFS SELECTED"
+                    )
 
                 elif event.key == pygame.K_r:
+
                     simulation.reset_simulation()
 
                 elif event.key == pygame.K_c:
+
                     simulation.clear_obstacles()
 
                 elif event.key == pygame.K_n:
+
                     simulation.new_map()
 
         simulation.update()

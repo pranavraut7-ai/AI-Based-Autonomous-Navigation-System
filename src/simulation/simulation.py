@@ -6,6 +6,7 @@ from src.visualization.hud import HUD
 
 from src.planning.astar import astar
 from src.planning.dijkstra import dijkstra
+from src.planning.bfs import bfs
 
 from src.utils.constants import *
 
@@ -26,6 +27,12 @@ class Simulation:
         self.goal = None
 
         self.current_algorithm = "A*"
+
+        self.algorithms = {
+            "A*": astar,
+            "DIJKSTRA": dijkstra,
+            "BFS": bfs
+        }
 
     def handle_mouse(self, event):
 
@@ -83,23 +90,17 @@ class Simulation:
             self.goal
         )
 
-        if self.current_algorithm == "A*":
+        planner = self.algorithms.get(
+            self.current_algorithm,
+            astar
+        )
 
-            path = astar(
-                lambda: self.render(),
-                self.grid.grid,
-                self.start,
-                self.goal
-            )
-
-        else:
-
-            path = dijkstra(
-                lambda: self.render(),
-                self.grid.grid,
-                self.start,
-                self.goal
-            )
+        path = planner(
+            lambda: self.render(),
+            self.grid.grid,
+            self.start,
+            self.goal
+        )
 
         self.robot.set_path(path)
 
@@ -136,6 +137,8 @@ class Simulation:
         self.hud = HUD()
 
         self.current_algorithm = "A*"
+
+        self.hud.set_algorithm("A*")
 
     def reset_simulation(self):
 

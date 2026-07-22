@@ -17,17 +17,11 @@ class HUD:
     def set_algorithm(self, algorithm):
         self.algorithm = algorithm
 
-    # --------------------------------------------------
-
     def set_status(self, status):
         self.status = status
 
-    # --------------------------------------------------
-
     def set_path_length(self, length):
         self.path_length = length
-
-    # --------------------------------------------------
 
     def set_robot_state(self, state):
         self.robot_state = state
@@ -44,7 +38,9 @@ class HUD:
 
             "GOAL SET": (52, 152, 219),
 
-            "PLANNING": (243, 156, 18),
+            "A* PLANNING": (243, 156, 18),
+            "DIJKSTRA PLANNING": (243, 156, 18),
+            "BFS PLANNING": (243, 156, 18),
 
             "MOVING": (41, 128, 185),
 
@@ -52,11 +48,16 @@ class HUD:
 
             "A* SELECTED": (52, 152, 219),
 
-            "DIJKSTRA SELECTED": (155, 89, 182)
+            "DIJKSTRA SELECTED": (155, 89, 182),
+
+            "BFS SELECTED": (230, 126, 34)
 
         }
 
-        return colors.get(self.status, TEXT_COLOR)
+        return colors.get(
+            self.status,
+            TEXT_COLOR
+        )
 
     # --------------------------------------------------
 
@@ -65,11 +66,21 @@ class HUD:
         panel_width = 275
 
         panel = pygame.Surface(
-            (panel_width, WINDOW_HEIGHT),
+            (
+                panel_width,
+                WINDOW_HEIGHT
+            ),
             pygame.SRCALPHA
         )
 
-        panel.fill((255, 255, 255, 150))
+        panel.fill(
+            (
+                255,
+                255,
+                255,
+                150
+            )
+        )
 
         pygame.draw.rect(
 
@@ -85,7 +96,10 @@ class HUD:
 
         )
 
-        screen.blit(panel, (0, 0))
+        screen.blit(
+            panel,
+            (0, 0)
+        )
 
         y = 22
 
@@ -99,7 +113,10 @@ class HUD:
 
         )
 
-        screen.blit(title, (20, y))
+        screen.blit(
+            title,
+            (20, y)
+        )
 
         y += 45
 
@@ -127,9 +144,15 @@ class HUD:
 
             )
 
-            screen.blit(label_surface, (20, y))
+            screen.blit(
+                label_surface,
+                (20, y)
+            )
 
-            screen.blit(value_surface, (150, y))
+            screen.blit(
+                value_surface,
+                (150, y)
+            )
 
             y += 32
 
@@ -167,17 +190,15 @@ class HUD:
 
         y += 25
 
-        divider_y = y
-
         pygame.draw.line(
 
             screen,
 
             PANEL_BORDER,
 
-            (20, divider_y),
+            (20, y),
 
-            (250, divider_y),
+            (250, y),
 
             1
 
@@ -207,6 +228,8 @@ class HUD:
             ("1", "Select A*"),
 
             ("2", "Select Dijkstra"),
+
+            ("3", "Select BFS"),
 
             ("SPACE", "Run Selected"),
 
