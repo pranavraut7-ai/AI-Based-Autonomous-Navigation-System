@@ -14,6 +14,11 @@ class HUD:
 
     # --------------------------------------------------
 
+    def set_algorithm(self, algorithm):
+        self.algorithm = algorithm
+
+    # --------------------------------------------------
+
     def set_status(self, status):
         self.status = status
 
@@ -43,7 +48,11 @@ class HUD:
 
             "MOVING": (41, 128, 185),
 
-            "GOAL REACHED": (39, 174, 96)
+            "GOAL REACHED": (39, 174, 96),
+
+            "A* SELECTED": (52, 152, 219),
+
+            "DIJKSTRA SELECTED": (155, 89, 182)
 
         }
 
@@ -80,8 +89,6 @@ class HUD:
 
         y = 22
 
-        # ---------------- Title ----------------
-
         title = TITLE_FONT.render(
 
             "AI Navigation",
@@ -95,8 +102,6 @@ class HUD:
         screen.blit(title, (20, y))
 
         y += 45
-
-        # ---------------------------------------
 
         def item(label, value, color=TEXT_COLOR):
 
@@ -129,29 +134,19 @@ class HUD:
             y += 32
 
         item(
-
             "Algorithm",
-
             self.algorithm
-
         )
 
         item(
-
             "Status",
-
             self.status,
-
             self.get_status_color()
-
         )
 
         item(
-
             "Path Length",
-
             str(self.path_length)
-
         )
 
         robot_color = (
@@ -165,13 +160,9 @@ class HUD:
         )
 
         item(
-
             "Robot",
-
             self.robot_state,
-
             robot_color
-
         )
 
         y += 25
@@ -205,18 +196,19 @@ class HUD:
         )
 
         screen.blit(
-
             controls_title,
-
             (20, y)
-
         )
 
         y += 40
 
         controls = [
 
-            ("SPACE", "Run A*"),
+            ("1", "Select A*"),
+
+            ("2", "Select Dijkstra"),
+
+            ("SPACE", "Run Selected"),
 
             ("R", "Reset"),
 
@@ -251,19 +243,13 @@ class HUD:
             )
 
             screen.blit(
-
                 key_surface,
-
                 (20, y)
-
             )
 
             screen.blit(
-
                 action_surface,
-
                 (90, y)
-
             )
 
             y += 28

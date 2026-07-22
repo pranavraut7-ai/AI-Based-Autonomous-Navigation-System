@@ -23,6 +23,9 @@ def main():
 
     simulation = Simulation(screen)
 
+    # Keep HUD synchronized with the default algorithm
+    simulation.hud.set_algorithm(simulation.current_algorithm)
+
     running = True
 
     while running:
@@ -47,11 +50,15 @@ def main():
                     simulation.find_path()
 
                 elif event.key == pygame.K_1:
+
                     simulation.current_algorithm = "A*"
+                    simulation.hud.set_algorithm("A*")
                     simulation.hud.set_status("A* SELECTED")
 
                 elif event.key == pygame.K_2:
+
                     simulation.current_algorithm = "DIJKSTRA"
+                    simulation.hud.set_algorithm("DIJKSTRA")
                     simulation.hud.set_status("DIJKSTRA SELECTED")
 
                 elif event.key == pygame.K_r:
