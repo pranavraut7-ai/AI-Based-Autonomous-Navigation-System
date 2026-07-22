@@ -3,7 +3,9 @@ import pygame
 from src.core.grid import Grid
 from src.navigation.robot import Robot
 from src.visualization.hud import HUD
+
 from src.planning.astar import astar
+from src.planning.dijkstra import dijkstra
 
 from src.utils.constants import *
 
@@ -22,6 +24,8 @@ class Simulation:
 
         self.start = None
         self.goal = None
+
+        self.current_algorithm = "A*"
 
     def handle_mouse(self, event):
 
@@ -72,24 +76,30 @@ class Simulation:
         if self.start is None or self.goal is None:
             return
 
-        self.hud.set_status("PLANNING")
+        self.hud.set_status(f"{self.current_algorithm} PLANNING")
 
         self.grid.clear_search(
             self.start,
             self.goal
         )
 
-        path = astar(
+        if self.current_algorithm == "A*":
 
-            lambda: self.render(),
+            path = astar(
+                lambda: self.render(),
+                self.grid.grid,
+                self.start,
+                self.goal
+            )
 
-            self.grid.grid,
+        else:
 
-            self.start,
-
-            self.goal
-
-        )
+            path = dijkstra(
+                lambda: self.render(),
+                self.grid.grid,
+                self.start,
+                self.goal
+            )
 
         self.robot.set_path(path)
 
@@ -124,6 +134,8 @@ class Simulation:
         self.robot = Robot()
 
         self.hud = HUD()
+
+        self.current_algorithm = "A*"
 
     def reset_simulation(self):
 

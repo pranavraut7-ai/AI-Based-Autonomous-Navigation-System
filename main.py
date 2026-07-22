@@ -40,23 +40,26 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
 
-                # Exit
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-                # Run planner
                 elif event.key == pygame.K_SPACE:
                     simulation.find_path()
 
-                # Full reset
+                elif event.key == pygame.K_1:
+                    simulation.current_algorithm = "A*"
+                    simulation.hud.set_status("A* SELECTED")
+
+                elif event.key == pygame.K_2:
+                    simulation.current_algorithm = "DIJKSTRA"
+                    simulation.hud.set_status("DIJKSTRA SELECTED")
+
                 elif event.key == pygame.K_r:
                     simulation.reset_simulation()
 
-                # Clear only obstacles
                 elif event.key == pygame.K_c:
                     simulation.clear_obstacles()
 
-                # New empty map
                 elif event.key == pygame.K_n:
                     simulation.new_map()
 
