@@ -8,122 +8,128 @@ class Robot:
 
     def __init__(self):
 
-        self.node = None
+        self.x = 0
+        self.y = 0
 
         self.path = []
+        self.index = 0
 
-        self.radius = CELL_SIZE // 2 - 4
+        self.speed = 4
 
-        self.color = ROBOT_COLOR
+        self.active = False
 
-        self.pixel_x = 0.0
-        self.pixel_y = 0.0
+        # Robot heading (degrees)
+        self.angle = 0
 
-        self.target_x = 0.0
-        self.target_y = 0.0
-
-        self.speed = 3.0
-
-        self.direction = 0
-
-        self.moving = False
+    # ---------------------------------
 
     def set_position(self, node):
 
-        self.node = node
+        self.x = node.x + CELL_SIZE // 2
+        self.y = node.y + CELL_SIZE // 2
 
-        self.pixel_x = node.col * CELL_SIZE + CELL_SIZE / 2
-        self.pixel_y = node.row * CELL_SIZE + CELL_SIZE / 2
+        self.path = []
+        self.index = 0
+        self.active = False
+        self.angle = 0
 
-        self.target_x = self.pixel_x
-        self.target_y = self.pixel_y
+    # ---------------------------------
 
     def set_path(self, path):
 
-        self.path = list(path)
+        if not path:
+            return
 
-        if len(self.path) > 0:
+        self.path = path
+        self.index = 0
+        self.active = True
 
-            first = self.path.pop(0)
-
-            self.node = first
-
-            self.pixel_x = first.col * CELL_SIZE + CELL_SIZE / 2
-            self.pixel_y = first.row * CELL_SIZE + CELL_SIZE / 2
-
-            self.target_x = self.pixel_x
-            self.target_y = self.pixel_y
-
-            self.moving = True
+    # ---------------------------------
 
     def update(self):
 
-        if not self.moving:
+        if not self.active:
             return
 
-        dx = self.target_x - self.pixel_x
-        dy = self.target_y - self.pixel_y
+        if self.index >= len(self.path):
+
+            self.active = False
+            return
+
+        target = self.path[self.index]
+
+        target_x = target.x + CELL_SIZE // 2
+        target_y = target.y + CELL_SIZE // 2
+
+        dx = target_x - self.x
+        dy = target_y - self.y
 
         distance = math.hypot(dx, dy)
 
-        if distance <= self.speed:
+        if distance < self.speed:
 
-            self.pixel_x = self.target_x
-            self.pixel_y = self.target_y
+            self.x = target_x
+            self.y = target_y
 
-            if self.path:
+            self.index += 1
 
-                self.node = self.path.pop(0)
+        else:
 
-                self.target_x = (
-                    self.node.col * CELL_SIZE +
-                    CELL_SIZE / 2
-                )
+            self.x += (dx / distance) * self.speed
+            self.y += (dy / distance) * self.speed
 
-                self.target_y = (
-                    self.node.row * CELL_SIZE +
-                    CELL_SIZE / 2
-                )
+            self.angle = math.degrees(
+                math.atan2(dy, dx)
+            )
 
-            else:
-
-                self.moving = False
-
-            return
-
-        angle = math.atan2(dy, dx)
-
-        self.direction = math.degrees(angle)
-
-        self.pixel_x += math.cos(angle) * self.speed
-        self.pixel_y += math.sin(angle) * self.speed
+    # ---------------------------------
 
     def draw(self, screen):
 
-        if self.node is None:
+        if self.x == 0 and self.y == 0:
             return
 
-        x = int(self.pixel_x)
-        y = int(self.pixel_y)
+        body_radius = CELL_SIZE // 3
 
+        # Main robot body
         pygame.draw.circle(
             screen,
-            self.color,
-            (x, y),
-            self.radius
+            (40, 170, 255),
+            (int(self.x), int(self.y)),
+            body_radius
         )
 
-        head_x = x + math.cos(
-            math.radians(self.direction)
-        ) * 8
+        # Body outline
+        pygame.draw.circle(
+            screen,
+            (230, 230, 230),
+            (int(self.x), int(self.y)),
+            body_radius,
+            2
+        )
 
-        head_y = y + math.sin(
-            math.radians(self.direction)
-        ) * 8
+        # Front heading indicator
+        front_length = body_radius + 4
+
+        hx = self.x + front_length * math.cos(
+            math.radians(self.angle)
+        )
+
+        hy = self.y + front_length * math.sin(
+            math.radians(self.angle)
+        )
+
+        pygame.draw.line(
+            screen,
+            (255, 255, 255),
+            (int(self.x), int(self.y)),
+            (int(hx), int(hy)),
+            3
+        )
 
         pygame.draw.circle(
             screen,
-            (255, 255, 255),
-            (int(head_x), int(head_y)),
-            3
+            (255, 80, 80),
+            (int(hx), int(hy)),
+            4
         )
