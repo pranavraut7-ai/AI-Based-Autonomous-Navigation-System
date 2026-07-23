@@ -1,47 +1,11 @@
 import heapq
-import pygame
 
-from src.utils.constants import *
-
-
-def get_neighbors(node, grid):
-
-    neighbors = []
-
-    directions = [
-        (-1, 0),
-        (1, 0),
-        (0, -1),
-        (0, 1),
-    ]
-
-    for dr, dc in directions:
-
-        r = node.row + dr
-        c = node.col + dc
-
-        if 0 <= r < ROWS and 0 <= c < COLS:
-
-            neighbor = grid[r][c]
-
-            if not neighbor.is_obstacle():
-                neighbors.append(neighbor)
-
-    return neighbors
-
-
-def reconstruct_path(came_from, current):
-
-    path = [current]
-
-    while current in came_from:
-
-        current = came_from[current]
-        path.append(current)
-
-    path.reverse()
-
-    return path
+from src.planning.common import (
+    handle_quit,
+    get_neighbors,
+    reconstruct_path,
+    draw_path,
+)
 
 
 def dijkstra(draw, grid, start, goal):
@@ -59,6 +23,7 @@ def dijkstra(draw, grid, start, goal):
             counter,
             start
         )
+
     )
 
     came_from = {}
@@ -73,13 +38,12 @@ def dijkstra(draw, grid, start, goal):
 
     while open_set:
 
-        for event in pygame.event.get():
+        if handle_quit():
+            return []
 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return []
-
-        current = heapq.heappop(open_set)[2]
+        current = heapq.heappop(
+            open_set
+        )[2]
 
         if current in visited:
             continue
@@ -93,12 +57,12 @@ def dijkstra(draw, grid, start, goal):
                 goal
             )
 
-            for node in path:
-
-                if node != start and node != goal:
-                    node.make_path()
-
-            draw()
+            draw_path(
+                draw,
+                path,
+                start,
+                goal
+            )
 
             return path
 
@@ -112,7 +76,8 @@ def dijkstra(draw, grid, start, goal):
         ):
 
             new_distance = (
-                distance[current] + 1
+                distance[current]
+                + 1
             )
 
             if new_distance < distance.get(
@@ -139,6 +104,7 @@ def dijkstra(draw, grid, start, goal):
                 )
 
                 if neighbor != goal:
+
                     neighbor.make_open()
 
         draw()

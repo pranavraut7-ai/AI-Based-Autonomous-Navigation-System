@@ -1,51 +1,16 @@
 import heapq
-import pygame
 
-from src.utils.constants import *
+from src.planning.common import (
+    handle_quit,
+    get_neighbors,
+    reconstruct_path,
+    draw_path,
+)
 
 
 def heuristic(a, b):
+
     return abs(a.row - b.row) + abs(a.col - b.col)
-
-
-def get_neighbors(node, grid):
-
-    neighbors = []
-
-    directions = [
-        (-1, 0),
-        (1, 0),
-        (0, -1),
-        (0, 1),
-    ]
-
-    for dr, dc in directions:
-
-        r = node.row + dr
-        c = node.col + dc
-
-        if 0 <= r < ROWS and 0 <= c < COLS:
-
-            neighbor = grid[r][c]
-
-            if not neighbor.is_obstacle():
-                neighbors.append(neighbor)
-
-    return neighbors
-
-
-def reconstruct_path(came_from, current):
-
-    path = [current]
-
-    while current in came_from:
-
-        current = came_from[current]
-        path.append(current)
-
-    path.reverse()
-
-    return path
 
 
 def astar(draw, grid, start, goal):
@@ -73,13 +38,12 @@ def astar(draw, grid, start, goal):
 
     while open_set:
 
-        for event in pygame.event.get():
+        if handle_quit():
+            return []
 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return []
-
-        current = heapq.heappop(open_set)[2]
+        current = heapq.heappop(
+            open_set
+        )[2]
 
         if current in visited:
             continue
@@ -93,19 +57,23 @@ def astar(draw, grid, start, goal):
                 goal
             )
 
-            for node in path:
-
-                if node != start and node != goal:
-                    node.make_path()
-
-            draw()
+            draw_path(
+                draw,
+                path,
+                start,
+                goal
+            )
 
             return path
 
         if current != start:
+
             current.make_closed()
 
-        for neighbor in get_neighbors(current, grid):
+        for neighbor in get_neighbors(
+            current,
+            grid
+        ):
 
             tentative = (
                 g_score[current]
@@ -123,7 +91,7 @@ def astar(draw, grid, start, goal):
 
                 counter += 1
 
-                f = (
+                priority = (
                     tentative
                     + heuristic(
                         neighbor,
@@ -132,15 +100,19 @@ def astar(draw, grid, start, goal):
                 )
 
                 heapq.heappush(
+
                     open_set,
+
                     (
-                        f,
+                        priority,
                         counter,
                         neighbor
                     )
+
                 )
 
                 if neighbor != goal:
+
                     neighbor.make_open()
 
         draw()
